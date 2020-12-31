@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { FormEvent } from 'react';
+import React, { ChangeEvent } from 'react';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import { FormHandles } from '@unform/core';
@@ -51,6 +51,31 @@ interface RequestData {
 
 const Cadastrar: React.FC = () => {
   const formRef = React.useRef<FormHandles>(null);
+
+  // Adiciona máscara ao CPF
+  const [cpfValue, setCpfValue] = React.useState('');
+
+  function onCpfChange(event: React.FormEvent<HTMLInputElement>) {
+    event.preventDefault();
+    setCpfValue(event.currentTarget.value);
+    if (
+      event.currentTarget.value.length === 3 ||
+      event.currentTarget.value.length === 7
+    ) {
+      setCpfValue(`${event.currentTarget.value}.`);
+    } else if (event.currentTarget.value.length === 11) {
+      setCpfValue(`${event.currentTarget.value}-`);
+    }
+  }
+  // Adiciona máscara ao CPF
+  const [cepValue, setCepValue] = React.useState('');
+  function onCepChange(event: React.FormEvent<HTMLInputElement>) {
+    event.preventDefault();
+    setCepValue(event.currentTarget.value);
+    if (event.currentTarget.value.length === 5) {
+      setCepValue(`${event.currentTarget.value}-`);
+    }
+  }
 
   const handleSubmit = React.useCallback(async (data: UserData) => {
     try {
@@ -183,16 +208,24 @@ const Cadastrar: React.FC = () => {
               placeholder="CPF 000.000.000-00"
               name="maskedCpf"
               maxLength={14}
+              value={cpfValue}
+              onChange={onCpfChange}
             />
             <Input type="text" placeholder="E-mail" name="email" />
+            <Input type="text" placeholder="DDD" name="ddd" />
             <Input
               type="text"
               placeholder="0(Res) 1(Cel) 2(Com)"
               name="phoneTypeString"
             />
-            <Input type="text" placeholder="DDD" name="ddd" />
             <Input type="text" placeholder="Número de telefone" name="number" />
-            <Input type="text" placeholder="CEP" name="maskedZip" />
+            <Input
+              type="text"
+              placeholder="CEP"
+              name="maskedZip"
+              value={cepValue}
+              onChange={onCepChange}
+            />
             <Input type="text" placeholder="Logradouro" name="street" />
             <Input type="text" placeholder="UF" name="uf" />
             <Input type="text" placeholder="Cidade" name="district" />
