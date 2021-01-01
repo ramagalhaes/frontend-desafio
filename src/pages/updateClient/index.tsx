@@ -9,7 +9,6 @@ import { Container, Content, Background } from './style';
 import Input from '../../components/Input/index';
 import Button from '../../components/Button/index';
 import getValidationErrors from '../../utils/getValidationErrors';
-import { useAuth } from '../../context/auth';
 import {
   Address,
   PhoneItems,
@@ -32,8 +31,10 @@ interface AutoCEP {
   uf: string;
 }
 
-const Cadastrar: React.FC = () => {
+const Atualizar: React.FC = () => {
   const formRef = React.useRef<FormHandles>(null);
+
+  const clientId = localStorage.getItem('userId');
 
   // Adiciona máscara ao CPF
   const [cpfValue, setCpfValue] = React.useState('');
@@ -183,10 +184,12 @@ const Cadastrar: React.FC = () => {
         address,
         phones,
       };
-      const response = await api.post('/clients', requestData);
+      const response = await api.put(`/clients/${clientId}`, requestData);
       if (response) {
-        alert('Usúario cadastrado com sucesso');
+        alert('Usúario atualizado com sucesso');
         window.location.href = '/clients';
+      } else {
+        alert('Apenas admnistradores podem atualizar clientes');
       }
     } catch (err) {
       console.log(err);
@@ -200,7 +203,7 @@ const Cadastrar: React.FC = () => {
       <Container>
         <Content>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Cadastrar cliente</h1>
+            <h1>Atualizar cliente</h1>
             <Input
               type="text"
               placeholder="Nome completo*"
@@ -209,7 +212,7 @@ const Cadastrar: React.FC = () => {
             />
             <Input
               type="text"
-              placeholder="CPF apenas números*"
+              placeholder="CPF 000.000.000-00*"
               name="maskedCpf"
               maxLength={14}
               value={cpfValue}
@@ -231,7 +234,7 @@ const Cadastrar: React.FC = () => {
             />
             <Input
               type="text"
-              placeholder="CEP* apenas números"
+              placeholder="CEP*"
               name="maskedZip"
               value={cepValue}
               onChange={onCepChange}
@@ -277,7 +280,7 @@ const Cadastrar: React.FC = () => {
             />
             <Input type="text" placeholder="Complemento " name="complement" />
 
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit">Atualizar</Button>
           </Form>
         </Content>
         <Background />
@@ -286,4 +289,4 @@ const Cadastrar: React.FC = () => {
   );
 };
 
-export default Cadastrar;
+export default Atualizar;

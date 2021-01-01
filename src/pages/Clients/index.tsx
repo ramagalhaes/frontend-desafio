@@ -2,34 +2,18 @@ import React, { MouseEvent } from 'react';
 import { number } from 'yup';
 import { ClientList, Header, Container } from './style';
 import api from '../../services/api';
-
-interface Address {
-  street: string;
-  zipCode: string;
-  uf: string;
-  city: string;
-  district: string;
-}
-type AddressItems = Array<Address>;
-
-interface Phone {
-  ddd: string;
-  number: string;
-  phoneType: number;
-}
-type PhoneItems = Array<Phone>;
-
-type EmailItems = Array<string>;
-type RequestDataItems = Array<RequestData>;
+import { Address, PhoneItems, EmailItems } from '../../utils/interfaces';
 
 interface RequestData {
   id: number;
   name: string;
   emails: EmailItems;
   cpf: string;
-  addresses: AddressItems;
+  address: Address;
   phones: PhoneItems;
 }
+
+type RequestDataItems = Array<RequestData>;
 
 const Clients: React.FC = () => {
   const [data, setData] = React.useState([] as RequestDataItems);
@@ -37,20 +21,40 @@ const Clients: React.FC = () => {
   React.useEffect(() => {
     async function fetchData() {
       const response = await api.get('/clients');
-      console.log(response.data);
       setData(response.data);
     }
     fetchData();
   }, [setData]);
+  console.log(data);
 
   async function handleDelete(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     const id = event.currentTarget.getAttribute('value');
     try {
-      api.delete(`/clients/${id}`);
+      const response = await api.delete(`/clients/${id}`);
+      window.location.href = '/clients';
     } catch (err) {
-      console.log(err);
+      alert('Só administradores podem deletar usúarios');
     }
+  }
+
+  function handleLogOut(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    window.localStorage.removeItem('username');
+    window.localStorage.removeItem('authorization');
+    window.location.href = '/';
+  }
+
+  function handleClick(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    window.location.href = '/cadastro';
+  }
+
+  async function handleUpdate(event: MouseEvent<HTMLButtonElement>) {
+    event.preventDefault();
+    const userId = event.currentTarget.getAttribute('value');
+    window.localStorage.setItem('userId', userId as string);
+    window.location.href = '/atualizar';
   }
 
   return (
@@ -58,8 +62,12 @@ const Clients: React.FC = () => {
       <Container>
         <Header>
           <a href="">Clientes</a>
-          <a href="">Adicionar cliente</a>
-          <a href="">Log-out</a>
+          <a href="" onClick={handleClick}>
+            Adicionar cliente
+          </a>
+          <a href="" onClick={handleLogOut}>
+            Log-out
+          </a>
         </Header>
 
         {data.map(client => (
@@ -69,50 +77,66 @@ const Clients: React.FC = () => {
               <b>Nome: </b>
               {client.name}
             </p>
-            <p>
-              <b>E-mail: </b>
-              {client.emails}
-            </p>
+            {client.emails.map(email => (
+              <div key={email}>
+                <p>
+                  <b>Email: </b>
+                  {email}
+                </p>
+              </div>
+            ))}
             <p>
               <b>CPF: </b>
               {client.cpf}
             </p>
-            <p>
-              <b>DDD: </b>
-              {client.phones[0].ddd}
-            </p>
-            <p>
-              <b>Número de telefone: </b> {client.phones[0].number}
-            </p>
-            <p>
-              <b>Tipo: </b>
-              {client.phones[0].phoneType}
-            </p>
+            {client.phones.map(phone => (
+              <div key={phone.number}>
+                <p>
+                  <b>DDD: </b>
+                  {phone.ddd}
+                </p>
+                <p>
+                  <b>Número de telefone: </b> {phone.number}
+                </p>
+                <p>
+                  <b>Tipo: </b>
+                  {phone.phoneType}
+                </p>
+              </div>
+            ))}
             <p>
               <b>CEP: </b>
-              {client.addresses[0].zipCode}
+              {client.address.zipCode}
             </p>
             <p>
               <b>UF: </b>
-              {client.addresses[0].uf}
+              {client.address.uf}
             </p>
             <p>
               <b>Cidade: </b>
-              {client.addresses[0].district}
+              {client.address.district}
             </p>
             <p>
               <b>Logradouro: </b>
-              {client.addresses[0].street}
+              {client.address.street}
             </p>
             <p>
               <b>Bairro: </b>
-              {client.addresses[0].city}
+              {client.address.city}
             </p>
+            {client.address.complement ? (
+              <p>
+                <b>Complemento: </b>
+                {client.address.complement}
+              </p>
+            ) : null}
             <span>
               <button type="button" onClick={handleDelete} value={client.id}>
                 Excluir
               </button>
-              <button type="button">Editar</button>
+              <button type="button" value={client.id} onClick={handleUpdate}>
+                Editar
+              </button>
             </span>
           </ClientList>
         ))}
