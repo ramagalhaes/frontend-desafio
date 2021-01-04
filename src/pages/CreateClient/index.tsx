@@ -185,13 +185,13 @@ const Cadastrar: React.FC = () => {
       };
       const response = await api.post('/clients', requestData);
       if (response) {
-        alert('Usúario cadastrado com sucesso');
+        alert('Usuário cadastrado com sucesso');
         window.location.href = '/clients';
       }
     } catch (err) {
+      alert('Apenas admnistradores podem cadastrar clientes');
+      window.location.href = '/clients';
       console.log(err);
-      const errors = getValidationErrors(err);
-      formRef.current?.setErrors(errors);
     }
   }, []);
 
@@ -206,6 +206,7 @@ const Cadastrar: React.FC = () => {
               placeholder="Nome completo*"
               name="name"
               maxLength={100}
+              required
             />
             <Input
               type="text"
@@ -214,22 +215,32 @@ const Cadastrar: React.FC = () => {
               maxLength={14}
               value={cpfValue}
               onChange={onCpfChange}
+              required
             />
-            <Input type="text" placeholder="E-mail*" name="email" />
-            <Input type="text" placeholder="DDD*" name="ddd" maxLength={3} />
+            <Input type="text" placeholder="E-mail*" name="email" required />
             <Input
+              type="text"
+              placeholder="DDD*"
+              name="ddd"
+              maxLength={3}
+              required
+            />
+            <Input
+              required
               type="text"
               placeholder="0(Res) 1(Cel) 2(Com)*"
               name="phoneTypeString"
               maxLength={1}
             />
             <Input
+              required
               type="text"
               placeholder="Número de telefone*"
               name="number"
               maxLength={9}
             />
             <Input
+              required
               type="text"
               placeholder="CEP* apenas números"
               name="maskedZip"
@@ -239,6 +250,7 @@ const Cadastrar: React.FC = () => {
               onBlur={handleCepBlur}
             />
             <Input
+              required
               type="text"
               placeholder="Logradouro*"
               name="street"
@@ -248,6 +260,7 @@ const Cadastrar: React.FC = () => {
               }}
             />
             <Input
+              required
               type="text"
               placeholder="UF*"
               name="uf"
@@ -258,6 +271,7 @@ const Cadastrar: React.FC = () => {
               }}
             />
             <Input
+              required
               type="text"
               placeholder="Cidade*"
               name="district"
@@ -267,6 +281,7 @@ const Cadastrar: React.FC = () => {
               }}
             />
             <Input
+              required
               type="text"
               placeholder="Bairro*"
               name="city"

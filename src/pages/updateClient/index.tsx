@@ -9,6 +9,7 @@ import { Container, Content, Background } from './style';
 import Input from '../../components/Input/index';
 import Button from '../../components/Button/index';
 import getValidationErrors from '../../utils/getValidationErrors';
+import { useAuth } from '../../context/auth';
 import {
   Address,
   PhoneItems,
@@ -33,7 +34,6 @@ interface AutoCEP {
 
 const Atualizar: React.FC = () => {
   const formRef = React.useRef<FormHandles>(null);
-
   const clientId = localStorage.getItem('userId');
 
   // Adiciona máscara ao CPF
@@ -186,15 +186,13 @@ const Atualizar: React.FC = () => {
       };
       const response = await api.put(`/clients/${clientId}`, requestData);
       if (response) {
-        alert('Usúario atualizado com sucesso');
+        alert('Usuário atualizado com sucesso');
         window.location.href = '/clients';
-      } else {
-        alert('Apenas admnistradores podem atualizar clientes');
       }
     } catch (err) {
+      alert('Apenas admnistradores podem atualizar clientes');
+      window.location.href = '/clients';
       console.log(err);
-      const errors = getValidationErrors(err);
-      formRef.current?.setErrors(errors);
     }
   }, []);
 
@@ -209,32 +207,43 @@ const Atualizar: React.FC = () => {
               placeholder="Nome completo*"
               name="name"
               maxLength={100}
+              required
             />
             <Input
               type="text"
-              placeholder="CPF 000.000.000-00*"
+              placeholder="CPF apenas números*"
               name="maskedCpf"
               maxLength={14}
               value={cpfValue}
               onChange={onCpfChange}
+              required
             />
-            <Input type="text" placeholder="E-mail*" name="email" />
-            <Input type="text" placeholder="DDD*" name="ddd" maxLength={3} />
+            <Input type="text" placeholder="E-mail*" name="email" required />
             <Input
+              type="text"
+              placeholder="DDD*"
+              name="ddd"
+              maxLength={3}
+              required
+            />
+            <Input
+              required
               type="text"
               placeholder="0(Res) 1(Cel) 2(Com)*"
               name="phoneTypeString"
               maxLength={1}
             />
             <Input
+              required
               type="text"
               placeholder="Número de telefone*"
               name="number"
               maxLength={9}
             />
             <Input
+              required
               type="text"
-              placeholder="CEP*"
+              placeholder="CEP* apenas números"
               name="maskedZip"
               value={cepValue}
               onChange={onCepChange}
@@ -242,6 +251,7 @@ const Atualizar: React.FC = () => {
               onBlur={handleCepBlur}
             />
             <Input
+              required
               type="text"
               placeholder="Logradouro*"
               name="street"
@@ -251,6 +261,7 @@ const Atualizar: React.FC = () => {
               }}
             />
             <Input
+              required
               type="text"
               placeholder="UF*"
               name="uf"
@@ -261,6 +272,7 @@ const Atualizar: React.FC = () => {
               }}
             />
             <Input
+              required
               type="text"
               placeholder="Cidade*"
               name="district"
@@ -270,6 +282,7 @@ const Atualizar: React.FC = () => {
               }}
             />
             <Input
+              required
               type="text"
               placeholder="Bairro*"
               name="city"
