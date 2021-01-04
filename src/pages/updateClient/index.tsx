@@ -71,130 +71,138 @@ const Atualizar: React.FC = () => {
     setAutoCep(response.data);
   }
 
-  const handleSubmit = React.useCallback(async (data: UserData) => {
-    try {
-      const schema = Yup.object().shape({
-        name: Yup.string()
-          .required('por favor preencha este campo')
-          .min(3, 'Mínimo de 3 caracteres')
-          .max(100, 'Limite máximo de 100 caracteres')
-          .matches(
-            /[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0-9 ]+$/,
-            'Apenas letras e espaços',
-          ),
-        email: Yup.string()
-          .required('Por favor preencha este campo')
-          .email('Digite um email válido'),
-        maskedCpf: Yup.string()
-          .required('Por favor preencha este campo')
-          .matches(
-            /^([0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2})$/,
-            'formato válido: xxx.xxx.xxx-xx',
-          )
-          .min(
-            14,
-            'O cpf deve conter 14 caracteres contando números e separadores',
-          )
-          .max(
-            14,
-            'O cpf deve conter 14 caracteres contando números e separadores',
-          ),
-        ddd: Yup.string()
-          .required('Por favor preencha este campo')
-          .min(3, 'Mínimo de 3 dígitos')
-          .max(3)
-          .matches(/^([0-9]*)$/),
-        number: Yup.string()
-          .required('Por favor preencha este campo')
-          .min(8, 'mínimo de 8 dígitos')
-          .max(9, 'celular precisa ter 9 dígitos')
-          .matches(/^([0-9]*)$/),
-        maskedZip: Yup.string()
-          .required('Por favor preencha este campo')
-          .min(9)
-          .max(9)
-          .matches(/^([0-9]{5}\-[0-9]{3})$/, 'formato: XXXXXX-XX'),
-        street: Yup.string()
-          .required('Por favor preencha este campo')
-          .matches(
-            /[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0-9 ]+$/,
-            'Apenas letras e espaços',
-          ),
-        uf: Yup.string()
-          .required()
-          .min(2)
-          .max(2)
-          .matches(
-            /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
-            'Apenas letras',
-          ),
-        district: Yup.string()
-          .required('Por favor preencha este campo')
-          .matches(
-            /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
-            'Apenas letras e espaços',
-          ),
-        city: Yup.string()
-          .required('Por favor preencha este campo')
-          .matches(
-            /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
-            'Apenas letras e espaços',
-          ),
-      });
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-      const {
-        name,
-        city,
-        ddd,
-        district,
-        email,
-        number,
-        phoneTypeString,
-        street,
-        uf,
-        maskedZip,
-        maskedCpf,
-        complement,
-      } = data;
-      const phoneType = Number(phoneTypeString);
-      const zipCode = maskedZip.split('-', 3).join('');
-      const cpf = maskedCpf.split('.', 8).join('').split('-', 2).join('');
-      const address = {
-        zipCode,
-        city,
-        district,
-        street,
-        uf,
-        complement,
-      };
-      const phones: PhoneItems = [
-        {
+  const handleSubmit = React.useCallback(
+    async (data: UserData) => {
+      try {
+        const schema = Yup.object().shape({
+          name: Yup.string()
+            .required('por favor preencha este campo')
+            .min(3, 'Mínimo de 3 caracteres')
+            .max(100, 'Limite máximo de 100 caracteres')
+            .matches(
+              /[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0-9 ]+$/,
+              'Apenas letras e espaços',
+            ),
+          email: Yup.string()
+            .required('Por favor preencha este campo')
+            .email('Digite um email válido'),
+          maskedCpf: Yup.string()
+            .required('Por favor preencha este campo')
+            .matches(
+              /^([0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2})$/,
+              'formato válido: xxx.xxx.xxx-xx',
+            )
+            .min(
+              14,
+              'O cpf deve conter 14 caracteres contando números e separadores',
+            )
+            .max(
+              14,
+              'O cpf deve conter 14 caracteres contando números e separadores',
+            ),
+          ddd: Yup.string()
+            .required('Por favor preencha este campo')
+            .min(3, 'Mínimo de 3 dígitos')
+            .max(3)
+            .matches(/^([0-9]*)$/),
+          number: Yup.string()
+            .required('Por favor preencha este campo')
+            .min(8, 'mínimo de 8 dígitos')
+            .max(9, 'celular precisa ter 9 dígitos')
+            .matches(/^([0-9]*)$/),
+          maskedZip: Yup.string()
+            .required('Por favor preencha este campo')
+            .min(9)
+            .max(9)
+            .matches(/^([0-9]{5}\-[0-9]{3})$/, 'formato: XXXXXX-XX'),
+          street: Yup.string()
+            .required('Por favor preencha este campo')
+            .matches(
+              /[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ0-9 ]+$/,
+              'Apenas letras e espaços',
+            ),
+          uf: Yup.string()
+            .required()
+            .min(2)
+            .max(2)
+            .matches(
+              /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
+              'Apenas letras',
+            ),
+          district: Yup.string()
+            .required('Por favor preencha este campo')
+            .matches(
+              /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
+              'Apenas letras e espaços',
+            ),
+          city: Yup.string()
+            .required('Por favor preencha este campo')
+            .matches(
+              /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
+              'Apenas letras e espaços',
+            ),
+        });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
+        const {
+          name,
+          city,
           ddd,
+          district,
+          email,
           number,
-          phoneType,
-        },
-      ];
-      const emails: EmailItems = [email];
-      const requestData: RequestData = {
-        name,
-        emails,
-        cpf,
-        address,
-        phones,
-      };
-      const response = await api.put(`/clients/${clientId}`, requestData);
-      if (response) {
-        alert('Usuário atualizado com sucesso');
-        window.location.href = '/clients';
+          phoneTypeString,
+          street,
+          uf,
+          maskedZip,
+          maskedCpf,
+          complement,
+        } = data;
+        const phoneType = Number(phoneTypeString);
+        const zipCode = maskedZip.split('-', 3).join('');
+        const cpf = maskedCpf.split('.', 8).join('').split('-', 2).join('');
+        const address = {
+          zipCode,
+          city,
+          district,
+          street,
+          uf,
+          complement,
+        };
+        const phones: PhoneItems = [
+          {
+            ddd,
+            number,
+            phoneType,
+          },
+        ];
+        const emails: EmailItems = [email];
+        const requestData: RequestData = {
+          name,
+          emails,
+          cpf,
+          address,
+          phones,
+        };
+        const response = await api.put(`/clients/${clientId}`, requestData);
+        if (response) {
+          alert('Usuário atualizado com sucesso');
+          window.location.href = '/clients';
+        }
+      } catch (err) {
+        if (err.response) {
+          alert('Apenas admnistradores podem atualizar clientes');
+          window.location.href = '/clients';
+          console.log(err.response);
+        } else {
+          const errors = getValidationErrors(err);
+          formRef.current?.setErrors(errors);
+        }
       }
-    } catch (err) {
-      alert('Apenas admnistradores podem atualizar clientes');
-      window.location.href = '/clients';
-      console.log(err);
-    }
-  }, []);
+    },
+    [clientId],
+  );
 
   return (
     <>

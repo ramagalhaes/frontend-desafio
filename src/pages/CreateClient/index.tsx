@@ -189,9 +189,14 @@ const Cadastrar: React.FC = () => {
         window.location.href = '/clients';
       }
     } catch (err) {
-      alert('Apenas admnistradores podem cadastrar clientes');
-      window.location.href = '/clients';
-      console.log(err);
+      if (err.response) {
+        alert('Apenas admnistradores podem cadastrar clientes');
+        window.location.href = '/clients';
+        console.log(err.response);
+      } else {
+        const errors = getValidationErrors(err);
+        formRef.current?.setErrors(errors);
+      }
     }
   }, []);
 
