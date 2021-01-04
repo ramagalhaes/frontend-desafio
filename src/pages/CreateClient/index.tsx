@@ -227,10 +227,11 @@ const Cadastrar: React.FC = () => {
             />
             <Input
               required
-              type="text"
+              type="number"
               placeholder="0(Res) 1(Cel) 2(Com)*"
               name="phoneTypeString"
               maxLength={1}
+              max={2}
             />
             <Input
               required
